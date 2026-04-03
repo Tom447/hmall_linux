@@ -1,0 +1,25 @@
+# 忽略所有环境配置文件（除了主配置）
+application-*.yaml
+application-*.yml
+application-*.properties
+
+# 忽略生成的文件
+target/
+out/
+build/
+*.iml
+*.class
+
+# 忽略 IDE 相关文件
+.idea/
+*.swp
+*.swo
+
+# 忽略临时文件
+*.tmp
+*.log
+
+# 忽略 Maven/Gradle 依赖
+.mvn/
+mvnw*
+gradlew*
