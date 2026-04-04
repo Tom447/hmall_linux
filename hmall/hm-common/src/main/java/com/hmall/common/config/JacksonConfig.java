@@ -1,3 +1,4 @@
+/*
 package com.hmall.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,3 +29,4 @@ public class JacksonConfig {
         return objectMapper;
     }
 }
+*/
