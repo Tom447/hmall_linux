@@ -22,6 +22,7 @@ public class OrderController {
     @ApiOperation("根据id查询订单")
     @GetMapping("{id}")
     public OrderVO queryOrderById(@Param ("订单id")@PathVariable("id") String id) {
+        System.out.println(id);
         // 这里的 id 可能会带引号，也可能不带，为了保险，去除所有引号
         String cleanId = id.replace("\"", "");
         // 再转回 Long 给业务层使用
