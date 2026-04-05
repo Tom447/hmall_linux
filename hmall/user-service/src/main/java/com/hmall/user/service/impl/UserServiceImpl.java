@@ -69,6 +69,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         log.info("开始扣款");
         // 1.校验密码
         //gateway的登录校验还没有配置成功先使用userid = 1
+        System.out.println(UserContext.getUser());
         User user = getById(UserContext.getUser());
 //        User user = getById(1L);
         if(user == null || !passwordEncoder.matches(pw, user.getPassword())){

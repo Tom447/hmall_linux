@@ -84,6 +84,7 @@ public class PayOrderServiceImpl extends ServiceImpl<PayOrderMapper, PayOrder> i
             // 不存在支付单，说明是第一次，写入新的支付单并返回
             PayOrder payOrder = buildPayOrder(applyDTO);
             payOrder.setPayOrderNo(IdWorker.getId());
+            payOrder.setBizUserId(UserContext.getUser());
             save(payOrder);
             return payOrder;
         }
