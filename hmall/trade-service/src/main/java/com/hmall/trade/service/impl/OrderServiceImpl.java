@@ -65,10 +65,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setUserId(UserContext.getUser());
         order.setStatus(1);
         // 1.6.将Order写入数据库order表中
-        order.setUserId(1L);
-        //TODO 在gateway没有完全搞定登录校验和授权之前userid设置为1，
+//        order.setUserId(1L);
+        //在gateway没有完全搞定登录校验和授权之前userid设置为1，
         //若搞定之后，需要将userId设置为UserContext.getUser()
-        //order.setUserId(UserContext.getUser());
+        order.setUserId(UserContext.getUser());
         save(order);
 
         // 2.保存订单详情

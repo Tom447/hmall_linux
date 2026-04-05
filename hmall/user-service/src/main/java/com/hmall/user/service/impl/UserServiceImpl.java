@@ -68,9 +68,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public void deductMoney(String pw, Integer totalFee) {
         log.info("开始扣款");
         // 1.校验密码
-        //TODO gateway的登录校验还没有配置成功先使用userid = 1
-        //  User user = getById(UserContext.getUser());
-        User user = getById(1L);
+        //gateway的登录校验还没有配置成功先使用userid = 1
+        User user = getById(UserContext.getUser());
+//        User user = getById(1L);
         if(user == null || !passwordEncoder.matches(pw, user.getPassword())){
             // 密码错误
             throw new BizIllegalException("用户密码错误");
