@@ -21,7 +21,7 @@ public class OrderController {
 
     @ApiOperation("根据id查询订单")
     @GetMapping("{id}")
-    public OrderVO queryOrderById(@Param ("订单id")@PathVariable("id") String id) {
+    public OrderVO queryOrderById(@Param("订单id") @PathVariable("id") String id) {
         System.out.println(id);
         // 这里的 id 可能会带引号，也可能不带，为了保险，去除所有引号
         String cleanId = id.replace("\"", "");
@@ -33,7 +33,7 @@ public class OrderController {
 
     @ApiOperation("创建订单")
     @PostMapping
-    public Long createOrder(@RequestBody OrderFormDTO orderFormDTO){
+    public Long createOrder(@RequestBody OrderFormDTO orderFormDTO) {
         return orderService.createOrder(orderFormDTO);
     }
 

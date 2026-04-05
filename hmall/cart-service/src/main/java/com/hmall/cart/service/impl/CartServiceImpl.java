@@ -44,8 +44,9 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
     @Override
     public void addItem2Cart(CartFormDTO cartFormDTO) {
         // 1.获取登录用户
-        Long userId = UserContext.getUser();
-
+        // TODO gateway还没有成功设置好，先设置为userid = 1
+        //Long userId = UserContext.getUser();
+        Long userId = 1L;
         // 2.判断是否已经存在
         if(checkItemExists(cartFormDTO.getItemId(), userId)){
             // 2.1.存在，则更新数量
