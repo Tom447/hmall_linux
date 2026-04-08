@@ -11,7 +11,6 @@ import com.hmall.cart.domain.po.Cart;
 import com.hmall.cart.domain.vo.CartVO;
 import com.hmall.cart.mapper.CartMapper;
 import com.hmall.cart.service.ICartService;
-import com.hmall.common.exception.BadRequestException;
 import com.hmall.common.exception.BizIllegalException;
 import com.hmall.common.utils.BeanUtils;
 import com.hmall.common.utils.CollUtils;
@@ -114,7 +113,9 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
         List<ItemDTO> items = response.getBody();*/
         List<ItemDTO> items = itemClient.queryItemByIds(itemIds);
         if (CollUtils.isEmpty(items)) {
-            throw new BadRequestException("购物车中商品不存在！");
+           /* throw new BadRequestException("购物车中商品不存在！");*/
+            log.error("购物车为空");
+            return;
         }
         // 3.转为 id 到 item的map
         Map<Long, ItemDTO> itemMap = items.stream().collect(Collectors.toMap(ItemDTO::getId, Function.identity()));

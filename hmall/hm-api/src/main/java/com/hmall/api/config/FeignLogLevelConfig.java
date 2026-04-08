@@ -1,5 +1,6 @@
 package com.hmall.api.config;
 
+import com.hmall.api.fallback.ItemClientFallbackFactory;
 import com.hmall.api.interceptors.UserInfoInterceptor;
 import feign.Logger;
 import feign.RequestInterceptor;
@@ -15,5 +16,10 @@ public class FeignLogLevelConfig {
     @Bean
     public RequestInterceptor feignRequestInterceptor() {
         return new UserInfoInterceptor();
+    }
+
+    @Bean
+    public ItemClientFallbackFactory itemClientFallbackFactory() {
+        return new ItemClientFallbackFactory();
     }
 }
