@@ -1,10 +1,15 @@
 server:
   port: 8082
+spring:
+  cloud:
+    sentinel:
+      transport:
+        dashboard: localhost:8090
+      http-method-specify: true
 hm:
   db:
     database: hm-cart
   swagger:
     title: 购物车文档
     package: com.hmall.cart.controller
-
 # keytool -genkeypair -alias hmall -keyalg RSA -keypass hmall123 -keystore hmall.jks -storepass hmall123
