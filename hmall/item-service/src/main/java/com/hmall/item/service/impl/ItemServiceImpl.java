@@ -22,6 +22,7 @@ public class ItemServiceImpl extends ServiceImpl<ItemMapper, Item> implements II
     @Transactional // 1. 加上事务，保证要么全成功，要么全失败
     public void deductStock(List<OrderDetailDTO> items) {
         // 2. 直接遍历调用 Mapper 方法，不要用 executeBatch 这种容易出错的底层操作
+
         for (OrderDetailDTO item : items) {
             // 调用你在 ItemMapper 中定义的 @Update 方法
             int updated = baseMapper.updateStock(item);

@@ -12,6 +12,7 @@ import com.hmall.item.service.IItemService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,11 +37,11 @@ public class ItemController {
     @ApiOperation("根据id批量查询商品")
     @GetMapping
     public List<ItemDTO> queryItemByIds(@RequestParam("ids") List<Long> ids){
-        try {
+       /* try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
            e.printStackTrace();
-        }
+        }*/
 
 
         return itemService.queryItemByIds(ids);
@@ -85,6 +86,7 @@ public class ItemController {
 
     @ApiOperation("批量扣减库存")
     @PutMapping("/stock/deduct")
+    @Transactional
     public void deductStock(@RequestBody List<OrderDetailDTO> items){
         itemService.deductStock(items);
     }
