@@ -13,6 +13,12 @@ spring:
   cloud:
     nacos:
       server-addr: 192.168.10.100:8848 # nacos地址 消费者
+  rabbitmq:
+    host: 192.168.10.100
+    port: 5672
+    virtual-host: /hmall
+    username: hmall
+    password: 123
 
 mybatis-plus:
   configuration:
