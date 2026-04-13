@@ -20,8 +20,6 @@ hm:
   swagger:
     title: 购物车文档
     package: com.hmall.cart.controller
-feign:
-  sentinel:
-    enabled: true #开启线程隔离
+
 
 # keytool -genkeypair -alias hmall -keyalg RSA -keypass hmall123 -keystore hmall.jks -storepass hmall123

@@ -24,24 +24,24 @@ public class PayStatuslistener {
             key = "pay.success"
     ))
     public void listenOrderPay(Long orderId){
-        //1.查询订单
+        /*//1.查询订单
         Order order = orderService.getById(orderId);
         //2.判断订单状态是否为未支付
-        /*
+        *//*
         *  order.getStatus() == 2，不写这个的原因是，比如用户是已退款的状态，那么
         * 直接判断 ==2 ？结果！= 2，那么就会改为已支付。那么就把退款的订单又变成已退款，那么就再退一次钱
         * 那么就再退一次钱。所以改为order.getStatus() != 1
-        * */
+        * *//*
         if (order == null || order.getStatus() != 1){
             //订单不存在，或者状态异常
-            /*
+            *//*
             * 注意这里不要抛异常，一旦抛异常，mq就要重新投递，那么就死循环了，所以直接return即可
-            * */
+            * *//*
             return;
         }
         //3.如果未支付，再去标记成已支付。
         System.out.println("PayStatuslistener监听到了:" + orderId);
-        orderService.markOrderPaySuccess(orderId);
+        orderService.markOrderPaySuccess(orderId);*/
 
         /*
         * 整个过程非常类似乐观锁
@@ -66,5 +66,6 @@ public class PayStatuslistener {
                 .eq(Order::getId, orderId)
                 .eq(Order::getStatus, 1)
                 .update();
+        System.out.println("PayStatuslistener监听到了:" + orderId);
     }
 }

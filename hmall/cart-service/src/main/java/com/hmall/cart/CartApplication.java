@@ -8,6 +8,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
+
+
 @MapperScan("com.hmall.cart.mapper")
 @EnableFeignClients(basePackages = "com.hmall.api.client", defaultConfiguration = FeignLogLevelConfig.class)
 @SpringBootApplication

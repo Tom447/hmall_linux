@@ -1,11 +1,12 @@
 package com.hmall.trade.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.hmall.api.client.CartClient;
 import com.hmall.api.client.ItemClient;
 import com.hmall.api.dto.ItemDTO;
 import com.hmall.api.dto.OrderDetailDTO;
+import com.hmall.common.constants.MqConstants;
 import com.hmall.common.exception.BadRequestException;
+import com.hmall.common.mq.RelyUserInfoMessageProcessor;
 import com.hmall.common.utils.UserContext;
 import com.hmall.trade.domain.dto.OrderFormDTO;
 import com.hmall.trade.domain.po.Order;
@@ -15,6 +16,8 @@ import com.hmall.trade.service.IOrderDetailService;
 import com.hmall.trade.service.IOrderService;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.AmqpException;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -38,7 +41,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     private final ItemClient itemClient;
     private final IOrderDetailService detailService;
-    private final CartClient cartClient;
+    private final RabbitTemplate rabbitTemplate;
+
 
     @Override
     @GlobalTransactional
@@ -77,15 +81,28 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         List<OrderDetail> details = buildDetails(order.getId(), items, itemNumMap);
         detailService.saveBatch(details);
 
-        // 3.清理购物车商品
-        cartClient.deleteCartItemByIds(itemIds);
+       /* // 3.清理购物车商品
+        cartClient.deleteCartItemByIds(itemIds);*/
 
-        // 4.扣减库存
+        // 3.扣减库存
         try {
             itemClient.deductStock(detailDTOS);
         } catch (Exception e) {
             throw new RuntimeException("库存不足！");
         }
+
+        //4.清理购物车
+        try {
+            rabbitTemplate.convertAndSend(
+                    MqConstants.TRADE_EXCHANGE_NAME,
+                    MqConstants.ORDER_CREATE_KEY,
+                    itemIds,
+                    new RelyUserInfoMessageProcessor()
+            );
+        } catch (AmqpException e) {
+            log.error("清理购物车的消息发送异常", e);
+        }
+
         return order.getId();
     }
 

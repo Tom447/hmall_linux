@@ -1,17 +1,5 @@
 server:
   port: 8087
-spring:
-  rabbitmq:
-    host: 192.168.10.100
-    port: 5672
-    virtual-host: /hmall
-    username: hmall
-    password: 123
-feign:
-  okhttp:
-    enabled: true # 开启OKHttp连接池支持
-  sentinel:
-    enabled: true # 开启Feign对Sentinel的整合
 hm:
   swagger:
     title: 交易服务接口文档

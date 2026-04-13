@@ -24,11 +24,20 @@ public class MultiDelayMessage<T> {
         return new MultiDelayMessage<>(data, CollUtils.newArrayList(delayMillis));
     }
 
-    /**
-     * 获取并移除第一个延迟时间
-     * @return 队列中的第一个延迟时间
-     */
-    public long removeFirst(){
+    /*
+    * 获取并并移除下一个延迟时间
+    * return：队列中的第一个延迟时间
+    * */
+    public Long removeNextDelay(){
         return delayMillis.remove(0);
     }
+
+    /*
+    * 是否还有下一个延迟时间
+    * */
+    public boolean  hasNextDelay(){
+        return !delayMillis.isEmpty();
+    }
+
+
 }

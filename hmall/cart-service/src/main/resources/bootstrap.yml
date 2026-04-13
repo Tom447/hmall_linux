@@ -14,3 +14,4 @@ spring:
           - dataId: shared-swagger.yaml # 共享日志配置
           - dataId: shared-feign.yaml #共享feign连接池配置
           - dataId: shared-seata.yaml # 共享seata配置
+          - dataId: shared-mq.yaml #共享mq的配置
