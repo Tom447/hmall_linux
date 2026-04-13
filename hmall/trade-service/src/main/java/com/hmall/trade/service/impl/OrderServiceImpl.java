@@ -107,7 +107,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
         //5.延迟检查订单状态的消息
         try {
-          /*  MultiDelayMessage<Long> msg = MultiDelayMessage.of(
+            MultiDelayMessage<Long> msg = MultiDelayMessage.of(
                     order.getId(),
                     10000L, 10000L, 10000L,
                     15000L, 15000L,
@@ -117,13 +117,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     300000L,
                     600000L,
                     600000L
-            );*/
-            //TODO 先延迟5s
+            );
+            /*//
             MultiDelayMessage<Long> msg = MultiDelayMessage.of(
                     order.getId(),
                     20000L,
                     20000L
-            );
+            );*/
             System.out.println("发送延时消息，订单号是:" + order.getId());
             rabbitTemplate.convertAndSend(
                     MqConstants.DELAY_EXCHANGE,
