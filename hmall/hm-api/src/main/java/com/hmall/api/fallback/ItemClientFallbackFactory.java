@@ -32,6 +32,12 @@ public class ItemClientFallbackFactory implements FallbackFactory<ItemClient> {
                 //不抛出异常的话，用户啥也不知道
                 throw new BizIllegalException(cause);
             }
+
+            @Override
+            public void recoveryStock(List<OrderDetailDTO> items) {
+                //不抛出异常的话，用户啥也不知道
+                throw new BizIllegalException(cause);
+            }
         };
     }
 }

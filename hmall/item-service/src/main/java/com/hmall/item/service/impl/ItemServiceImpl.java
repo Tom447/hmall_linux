@@ -39,4 +39,16 @@ public class ItemServiceImpl extends ServiceImpl<ItemMapper, Item> implements II
     public List<ItemDTO> queryItemByIds(Collection<Long> ids) {
         return BeanUtils.copyList(listByIds(ids), ItemDTO.class);
     }
+
+    @Override
+    @Transactional // 记得加事务
+    public void recoveryStock(List<OrderDetailDTO> items) {
+        for (OrderDetailDTO dto : items) {
+            // 使用 UpdateWrapper 实现 SET stock = stock + num
+            lambdaUpdate()
+                    .eq(Item::getId, dto.getItemId()) // 条件：指定商品
+                    .setSql("stock = stock + " + dto.getNum())      // 操作：库存累加 (MyBatis-Plus 不直接支持表达式，需用 setSql)
+                    .update();
+        }
+    }
 }

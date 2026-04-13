@@ -9,12 +9,15 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.*;
 
 @Api(tags = "支付相关接口")
 @RestController
 @RequestMapping("pay-orders")
 @RequiredArgsConstructor
+@Slf4j
 public class PayController {
 
     private final IPayOrderService payOrderService;
@@ -36,4 +39,23 @@ public class PayController {
         payOrderFormDTO.setId(id);
         payOrderService.tryPayOrderByBalance(payOrderFormDTO);
     }
+
+    @ApiOperation("是否已支付")
+    @ApiImplicitParam(value = "订单id", name = "id")
+    // 方式1：使用 @RequestParam，这样即使 Body 里有错数据也不会影响
+    @GetMapping("{id}")
+    public boolean isPayByOrderId(@Param("订单id") @PathVariable("id") String id){
+        System.out.println(id);
+        // 这里的 id 可能会带引号，也可能不带，为了保险，去除所有引号
+        String cleanId = id.replace("\"", "");
+        // 再转回 Long 给业务层使用
+        Long orderId = Long.parseLong(cleanId);
+        if (orderId == null) {
+            // 这里可以打印一个 Warn 日志，或者直接返回 false
+            log.warn("Invalid request parameter for isPay");
+            return false;
+        }
+        return payOrderService.isPayByOrderId(orderId);
+    }
+
 }

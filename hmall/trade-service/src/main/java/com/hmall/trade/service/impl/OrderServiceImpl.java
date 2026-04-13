@@ -5,8 +5,11 @@ import com.hmall.api.client.ItemClient;
 import com.hmall.api.dto.ItemDTO;
 import com.hmall.api.dto.OrderDetailDTO;
 import com.hmall.common.constants.MqConstants;
+import com.hmall.common.domain.MultiDelayMessage;
 import com.hmall.common.exception.BadRequestException;
+import com.hmall.common.mq.DelayMessageProcessor;
 import com.hmall.common.mq.RelyUserInfoMessageProcessor;
+import com.hmall.common.utils.BeanUtils;
 import com.hmall.common.utils.UserContext;
 import com.hmall.trade.domain.dto.OrderFormDTO;
 import com.hmall.trade.domain.po.Order;
@@ -102,7 +105,35 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         } catch (AmqpException e) {
             log.error("清理购物车的消息发送异常", e);
         }
-
+        //5.延迟检查订单状态的消息
+        try {
+          /*  MultiDelayMessage<Long> msg = MultiDelayMessage.of(
+                    order.getId(),
+                    10000L, 10000L, 10000L,
+                    15000L, 15000L,
+                    30000L, 30000L,
+                    60000L, 60000L,
+                    120000L,
+                    300000L,
+                    600000L,
+                    600000L
+            );*/
+            //TODO 先延迟5s
+            MultiDelayMessage<Long> msg = MultiDelayMessage.of(
+                    order.getId(),
+                    20000L,
+                    20000L
+            );
+            System.out.println("发送延时消息，订单号是:" + order.getId());
+            rabbitTemplate.convertAndSend(
+                    MqConstants.DELAY_EXCHANGE,
+                    MqConstants.DELAY_ORDER_ROUTING_KEY,
+                    msg,
+                    new DelayMessageProcessor(msg.removeNextDelay().intValue())
+            );
+        } catch (AmqpException e) {
+            log.error("延迟消息检查异常", e);
+        }
         return order.getId();
     }
 
@@ -114,6 +145,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setPayTime(LocalDateTime.now());
         updateById(order);
     }
+
+    @Override
+    @GlobalTransactional
+    public void cancleOrder(Long orderId) {
+        // 取消订单
+        lambdaUpdate()
+                .set(Order::getStatus, 5)
+                .set(Order::getCloseTime, LocalDateTime.now())
+                .eq(Order::getId, orderId)
+                .update();
+        //恢复库存
+        //1.先得到需要恢复库存的商品id和对应的商品数量的OrderDetailDTO
+        List<OrderDetail> orderDetailList = detailService.lambdaQuery().eq(OrderDetail::getOrderId, orderId).list();
+        List<OrderDetailDTO> dtoList = orderDetailList.stream()
+                .map(orderDetail -> BeanUtils.copyBean(orderDetail, OrderDetailDTO.class))
+                .collect(Collectors.toList());
+        itemClient.recoveryStock(dtoList);
+    }
+
     private List<OrderDetail> buildDetails(Long orderId, List<ItemDTO> items, Map<Long, Integer> numMap) {
         List<OrderDetail> details = new ArrayList<>(items.size());
         for (ItemDTO item : items) {

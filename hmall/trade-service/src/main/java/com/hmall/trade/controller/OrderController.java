@@ -33,8 +33,8 @@ public class OrderController {
 
     @ApiOperation("创建订单")
     @PostMapping
-    public Long createOrder(@RequestBody OrderFormDTO orderFormDTO) {
-        return orderService.createOrder(orderFormDTO);
+    public String createOrder(@RequestBody OrderFormDTO orderFormDTO) {
+        return orderService.createOrder(orderFormDTO).toString();
     }
 
     @ApiOperation("标记订单已支付")

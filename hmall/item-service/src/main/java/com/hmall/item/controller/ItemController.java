@@ -90,4 +90,11 @@ public class ItemController {
     public void deductStock(@RequestBody List<OrderDetailDTO> items){
         itemService.deductStock(items);
     }
+
+    @ApiOperation("恢复商品库存")
+    @PutMapping("/stock/recovery")
+    @Transactional
+    public void recoveryStock(@RequestBody List<OrderDetailDTO> items){
+        itemService.recoveryStock(items);
+    }
 }

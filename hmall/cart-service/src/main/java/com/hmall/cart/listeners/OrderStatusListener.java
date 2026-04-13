@@ -26,7 +26,6 @@ public class OrderStatusListener {
             exchange = @Exchange(name = MqConstants.TRADE_EXCHANGE_NAME, type = ExchangeTypes.TOPIC),
             key = MqConstants.ORDER_CREATE_KEY
     ))
-    //TODO 清空 购物车监听器
     public void listenOrderCreate(Collection<Long> itemIds){
         log.warn("清空 购物车监听器， 清空{}", itemIds);
         itemIds.stream().forEach(itemId ->{

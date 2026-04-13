@@ -2,10 +2,12 @@ package com.hmall.common.domain;
 
 import com.hmall.common.utils.CollUtils;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 public class MultiDelayMessage<T> {
     /**
      * 消息体
