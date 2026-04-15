@@ -39,7 +39,7 @@ public class OrderStatusCheckListener {
         //3.1 如果已支付，标记订单状态为已支付
         if (isPay){
             orderService.markOrderPaySuccess(order.getId());
-            System.out.println("已支付，标记订单状态为已支付");
+            System.out.println("订单号orderId:" + order.getId() + "已支付，标记订单状态为已支付");
             return;
         }
 
@@ -53,7 +53,7 @@ public class OrderStatusCheckListener {
                     msg,
                     new DelayMessageProcessor(nextDelay.intValue())
             );
-            System.out.println("延迟时间存在，延迟时间:" + nextDelay);
+            System.out.println("延迟时间存在，订单id是" + order.getId() + "，延迟时间:" + nextDelay);
             return;
         }
         //5 不存在，取消订单
