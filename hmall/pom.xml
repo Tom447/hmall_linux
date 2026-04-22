@@ -18,6 +18,7 @@
         <module>hm-gateway</module>
         <module>trade-service</module>
         <module>pay-service</module>
+        <module>search-service</module>
     </modules>
 
     <parent>

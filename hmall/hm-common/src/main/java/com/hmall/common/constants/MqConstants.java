@@ -8,4 +8,9 @@ public interface MqConstants {
     String DELAY_EXCHANGE = "trade.delay.topic";
     String DELAY_ORDER_QUEUE = "trade.order.delay.queue";
     String DELAY_ORDER_ROUTING_KEY = "order.query";
+
+    /*商品上下架*/
+    String ITEM_EXCHANGE_NAME = "items.topic";
+    String ITEM_UP_KEY = "item.up";
+    String ITEM_DOWN_KEY = "item.down";
 }

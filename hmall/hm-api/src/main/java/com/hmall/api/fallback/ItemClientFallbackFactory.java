@@ -38,6 +38,12 @@ public class ItemClientFallbackFactory implements FallbackFactory<ItemClient> {
                 //不抛出异常的话，用户啥也不知道
                 throw new BizIllegalException(cause);
             }
+
+            @Override
+            public ItemDTO queryItemById(Long id) {
+                //不抛出异常的话，用户啥也不知道
+                throw new BizIllegalException(cause);
+            }
         };
     }
 }
