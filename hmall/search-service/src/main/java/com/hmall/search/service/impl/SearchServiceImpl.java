@@ -19,10 +19,13 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.lucene.search.function.CombineFunction;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
+import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -85,7 +88,7 @@ public class SearchServiceImpl implements ISearchService {
         }
     }
 
-    private QueryBuilder buildQuery(ItemPageQuery query) {
+   /* private QueryBuilder buildQuery(ItemPageQuery query) {
         //1.初始化布尔查询
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
@@ -118,8 +121,60 @@ public class SearchServiceImpl implements ISearchService {
         }
 
         return boolQuery;
-    }
+    }*/
 
+    private QueryBuilder buildQueryAndIsAD(ItemPageQuery query) {
+        //1.初始化布尔查询
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+
+        //1 关键字搜索
+        String key = query.getKey();
+        if (StrUtil.isBlank(key)){
+            boolQuery.must(QueryBuilders.matchAllQuery());
+        }else {
+            boolQuery.must(QueryBuilders.matchQuery("name", key));
+        }
+
+        //2 过滤条件
+        //2.1 分类过滤
+        String category = query.getCategory();
+        if (StrUtil.isNotBlank(category)) {
+            boolQuery.filter(QueryBuilders.termQuery("category", category));
+        }
+
+        //2.2品牌过滤
+        String brand = query.getBrand();
+        if (StrUtil.isNotBlank(brand)) {
+            boolQuery.filter(QueryBuilders.termQuery("brand", brand));
+        }
+
+        //2.3价格过滤
+        Integer minPrice = query.getMinPrice();
+        Integer maxPrice = query.getMaxPrice();
+        if (minPrice != null || maxPrice != null) {
+            boolQuery.filter(QueryBuilders.rangeQuery("price").gte(minPrice).lte(maxPrice));
+        }
+
+        //添加竞价的广告
+        FunctionScoreQueryBuilder functionScoreQuery = QueryBuilders.functionScoreQuery(
+                boolQuery, // 第一个参数：原始查询
+                new FunctionScoreQueryBuilder.FilterFunctionBuilder[]{
+                        new FunctionScoreQueryBuilder.FilterFunctionBuilder(
+                                QueryBuilders.termQuery("isAD", true), // 过滤条件：广告商品
+                                //设置一个初始值
+                                ScoreFunctionBuilders.weightFactorFunction(100) // 算分函数：权重 100
+                        )
+                }
+        )/*
+            针对文档的最终得分，boostMode(CombineFunction.MULTIPLY)是一个怎么样组合的策略
+            1. 原始相关性得分，也是文档相关性得分（比如搜索华为手机，相关度5.6）
+            2. 函数得分，上面 weightFactorFunction 计算出来的得分（广告为 100，非广告为 0 或 1）。
+            boostMode 决定了这两个分数怎么“合体”。我选择了 MULTIPLY（相乘）。
+
+        */
+        .boostMode(CombineFunction.MULTIPLY);
+        return functionScoreQuery;
+    }
 
     @Override
     public PageVO<ItemDoc> search(ItemPageQuery query){
@@ -128,7 +183,7 @@ public class SearchServiceImpl implements ISearchService {
             SearchRequest request = new SearchRequest("items");
             //2.准备DSL
             //2.1查询条件
-            request.source().query(buildQuery(query));
+            request.source().query(buildQueryAndIsAD(query));
             //2.2分页条件
             request.source().from((query.getPageNo() - 1) * query.getPageSize()).size(query.getPageSize());
 
@@ -167,7 +222,7 @@ public class SearchServiceImpl implements ISearchService {
         } catch (IOException e) {
             return PageVO.empty(0L, 0L);
         }
-        }
+    }
 
     @Override
     public Map<String, List<String>> getFilters(ItemPageQuery query) {
@@ -176,7 +231,7 @@ public class SearchServiceImpl implements ISearchService {
             SearchRequest request = new SearchRequest("items");
             // 2.准备DSL
             // 2.1.查询条件
-            request.source().query(buildQuery(query));
+            request.source().query(buildQueryAndIsAD(query));
             // 2.2.分页条件
             request.source().size(0);
             // 2.3.聚合条件
